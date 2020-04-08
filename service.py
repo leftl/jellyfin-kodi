@@ -1,39 +1,60 @@
 # -*- coding: utf-8 -*-
-from __future__ import division, absolute_import, print_function, unicode_literals
 
-#################################################################################################
+###############################################################################
 
+import imp
 import logging
 import os
 import threading
 import sys
 
-from kodi_six import xbmc, xbmcaddon
+import xbmc
+import xbmcvfs
+import xbmcaddon
 
-#################################################################################################
+###############################################################################
 
 __addon__ = xbmcaddon.Addon(id='plugin.video.jellyfin')
-__base__ = xbmc.translatePath(os.path.join(__addon__.getAddonInfo('path'), 'jellyfin_kodi'))
+__addon_path__ = __addon__.getAddonInfo('path').decode('utf-8')
+__base__ = xbmc.translatePath(os.path.join(__addon_path__, 'resources', 'lib')).decode('utf-8')
+__libraries__ = xbmc.translatePath(os.path.join(__addon_path__, 'libraries')).decode('utf-8')
+__pcache__ = xbmc.translatePath(os.path.join(__addon__.getAddonInfo('profile'), 'jellyfin')).decode('utf-8')
+__cache__ = xbmc.translatePath('special://temp/jellyfin').decode('utf-8')
 
-sys.path.insert(0, __base__)
+sys.path.insert(0, __libraries__)
 
-#################################################################################################
+if not xbmcvfs.exists(__pcache__ + '/'):
+    from resources.lib.helper.utils import copytree
 
-from entrypoint import Service  # noqa: F402
-from helper.utils import settings  # noqa: F402
+    copytree(os.path.join(__base__, 'objects'), os.path.join(__pcache__, 'objects'))
 
-#################################################################################################
+sys.path.insert(0, __cache__)
+sys.path.insert(0, __pcache__)
+sys.path.append(__base__)
+sys.argv.append('service')
+
+###############################################################################
+
+from helper import settings
+import entrypoint
+
+###############################################################################
 
 LOG = logging.getLogger("JELLYFIN.service")
 DELAY = int(settings('startupDelay') if settings('SyncInstallRunDone.bool') else 4 or 0)
 
-#################################################################################################
+###############################################################################
 
 
 class ServiceManager(threading.Thread):
 
-    ''' Service thread.
+    ''' Service thread. 
         To allow to restart and reload modules internally.
+
+        Restart service
+        Delete lib and objects entries to reload them as if it were the first time.
+        Delete .pyo files to force Kodi to recreate them.
+        Finally, re-initialize modules that are used in __main__ to reload all our modules.
     '''
     exception = None
 
@@ -41,52 +62,82 @@ class ServiceManager(threading.Thread):
         threading.Thread.__init__(self)
 
     def run(self):
+        global entrypoint
+        global settings
+
         service = None
 
         try:
-            service = Service()
+            service = entrypoint.Service()
 
             if DELAY and xbmc.Monitor().waitForAbort(DELAY):
                 raise Exception("Aborted during startup delay")
 
             service.service()
         except Exception as error:
-            LOG.exception(error)
-
-            if service is not None:
-                # TODO: fix this properly as to not match on str()
-                if 'ExitService' not in str(error):
-                    service.shutdown()
-
-                if 'RestartService' in str(error):
-                    service.reload_objects()
-
             self.exception = error
+            LOG.error(error)
+            if service is not None:
+
+                if not 'ExitService' in error:
+                    service.shutdown()
+                
+                if 'RestartService' in error:
+
+                    for mod in dict(sys.modules):
+                        module = sys.modules[mod]
+
+                        try:
+                            module_path = imp.find_module(mod.split('.')[0])[1]
+
+                            if ('plugin.video.jellyfin' in module_path and not 'libraries' in module_path or 
+                                mod.startswith('objects')):
+
+                                LOG.debug("[ reload/%s ]", mod)
+                                del sys.modules[mod]
+                        except ImportError: #xbmc built-in functions or entries with None
+                            pass
+
+                    import entrypoint
+                    import helper
+                    import objects
+
+                    try:
+                        helper.utils.delete_pyo(__addon_path__)
+                        helper.utils.delete_pyo(__pcache__)
+                    except Exception:
+                        pass
+
+                    imp.reload(entrypoint)
+                    imp.reload(helper)
+                    imp.reload(objects)
+
+                    from helper import settings
 
 
-if __name__ == "__main__":
-    LOG.info("-->[ service ]")
-    LOG.info("Delay startup by %s seconds.", DELAY)
+if __name__ == '__main__':
+
+    LOG.warn("-->[ service ]")
+    LOG.warn("Delay startup by %s seconds.", DELAY)
 
     while True:
+
         if not settings('enableAddon.bool'):
-            LOG.warning("Jellyfin for Kodi is not enabled.")
+            LOG.warn("Jellyfin for Kodi is not enabled.")
 
             break
 
         try:
             session = ServiceManager()
             session.start()
-            session.join()  # Block until the thread exits.
+            session.join() # Block until the thread exits.
 
-            if 'RestartService' in str(session.exception):
+            if 'RestartService' in session.exception:
                 continue
 
         except Exception as error:
-            ''' Issue initializing the service.
-            '''
             LOG.exception(error)
 
         break
 
-    LOG.info("--<[ service ]")
+    LOG.warn("--<[ service ]")

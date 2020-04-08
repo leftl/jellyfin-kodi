@@ -1,32 +1,33 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addon  id="plugin.video.jellyfin"
-        name="Jellyfin"
-        version="0.5.3"
-        provider-name="Jellyfin Contributors, angelblue05">
+        name="Jellyfin" 
+        version="4.1.19"
+        provider-name="angelblue05, sualfred, Jellyfin Contributors">
   <requires>
-    <import addon="xbmc.python" version="2.25.0"/>
-    <import addon="script.module.requests" version="2.22.0"/>
-    <import addon="script.module.dateutil" version="2.7.3"/>
-    <import addon="script.module.six" version="1.13.0"/>
-    <import addon="script.module.kodi-six" />
-    <import addon="script.module.addon.signals" version="0.0.1"/>
-    <import addon="script.module.futures" version="2.2.0"/>
+      <import addon="xbmc.python" version="2.25.0"/>
+      <import addon="plugin.video.jellyfin.movies" version="0.14" /> 
+      <import addon="plugin.video.jellyfin.tvshows" version="0.14" /> 
+      <import addon="plugin.video.jellyfin.musicvideos" version="0.14" />
   </requires>
-  <extension    point="xbmc.python.pluginsource"
-                library="default.py">
+  <extension point="xbmc.python.pluginsource"
+             library="default.py">
         <provides>video audio image</provides>
   </extension>
   <extension point="xbmc.service" library="service.py" start="login">
   </extension>
   <extension point="kodi.context.item">
     <menu id="kodi.core.main">
+      <item library="context_play.py">
+        <label>33201</label>
+        <visible>[!String.IsEmpty(ListItem.DBID) + !String.IsEqual(ListItem.DBID,-1) | !String.IsEmpty(ListItem.Property(jellyfinid))] + !String.IsEmpty(Window(10000).Property(jellyfin_context))</visible>
+      </item>
+      <item library="context_transcode.py">
+        <label>30402</label>
+        <visible>[[!String.IsEmpty(ListItem.DBID) + !String.IsEqual(ListItem.DBID,-1) | !String.IsEmpty(ListItem.Property(jellyfinid))] + [String.IsEqual(ListItem.DBTYPE,movie) | String.IsEqual(ListItem.DBTYPE,episode)]] + !String.IsEmpty(Window(10000).Property(jellyfin_context_transcode))</visible>
+      </item>
       <item library="context.py">
         <label>30401</label>
         <visible>[!String.IsEmpty(ListItem.DBID) + !String.IsEqual(ListItem.DBID,-1) | !String.IsEmpty(ListItem.Property(jellyfinid))] + !String.IsEmpty(Window(10000).Property(jellyfin_context))</visible>
-      </item>
-      <item library="context_play.py">
-        <label>30402</label>
-        <visible>[[!String.IsEmpty(ListItem.DBID) + !String.IsEqual(ListItem.DBID,-1) | !String.IsEmpty(ListItem.Property(jellyfinid))] + [String.IsEqual(ListItem.DBTYPE,movie) | String.IsEqual(ListItem.DBTYPE,episode)]] + !String.IsEmpty(Window(10000).Property(jellyfin_context_transcode))</visible>
       </item>
     </menu>
   </extension>
