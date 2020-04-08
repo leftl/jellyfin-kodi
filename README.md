@@ -1,14 +1,14 @@
 # Jellyfin for Kodi
 
-[![JellyfinKodi_Banner](https://i.imgur.com/hx4cx41.png)](https://jellyfin.media/community/index.php?/forum/99-kodi/)
+<!--- [![JellyfinKodi_Banner](https://i.imgur.com/hx4cx41.png)](https://jellyfin.media/community/index.php?/forum/99-kodi/)
 
 [![Wiki](https://img.shields.io/badge/get%20started-wiki-brightgreen.svg)](https://github.com/MediaBrowser/plugin.video.jellyfin/wiki) 
 [![Forums](https://img.shields.io/badge/report%20issues-forums-3960C1.svg)](https://jellyfin.media/community/index.php?/forum/99-kodi/)
 [![Donate](https://img.shields.io/badge/donate-kofi-blue.svg)](https://ko-fi.com/A5354BI)
 [![Jellyfin for Kodi objects](https://img.shields.io/badge/patch-objects-3960C1.svg)](https://github.com/MediaBrowser/plugin.video.jellyfin.objects)
-[![Jellyfin](https://img.shields.io/badge/server-jellyfin-52b54b.svg)](https://jellyfin.media/)
+[![Jellyfin](https://img.shields.io/badge/server-jellyfin-52b54b.svg)](https://jellyfin.media/) 
 
-___
+___ -->
 **A whole new way to manage and view your media library.**
 
 The Jellyfin for Kodi add-on combines the best of Kodi - ultra smooth navigation, beautiful UIs and playback of any file under the sun, and Jellyfin - the most powerful open source multi-client media metadata indexer and server. You can now retire your MySQL setup in favor of a more flexible setup.
