@@ -3,6 +3,7 @@ __pycache__/
 __local__/
 machine_guid
 /resources/media/Thumbs.db
+kodi-addon-checker-report.log
 
 .idea/
 .DS_Store
