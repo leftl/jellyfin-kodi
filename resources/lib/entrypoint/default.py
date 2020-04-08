@@ -175,8 +175,8 @@ class Events(object):
             xbmc.executebuiltin('Addon.OpenSettings(plugin.video.jellyfin)')
         elif mode == 'adduser':
             add_user(params.get('permanent') == 'true')
-        elif mode == 'checkupdate':
-            event('CheckUpdate')
+        # elif mode == 'checkupdate':
+        #     event('CheckUpdate')
         elif mode == 'resetupdate':
             event('ResetUpdate')
         elif mode == 'updateserver':
