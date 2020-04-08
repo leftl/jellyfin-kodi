@@ -4,8 +4,6 @@ get_cache =     	        """	SELECT	cachedurl
 				    			WHERE 	url = ? 
 			     			"""
 
-
-
 delete_cache =  			""" DELETE FROM texture 
 								WHERE 		url = ? 
 							"""

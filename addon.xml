@@ -5,9 +5,7 @@
         provider-name="angelblue05, sualfred, Jellyfin Contributors">
   <requires>
       <import addon="xbmc.python" version="2.25.0"/>
-      <import addon="plugin.video.jellyfin.movies" version="0.14" /> 
-      <import addon="plugin.video.jellyfin.tvshows" version="0.14" /> 
-      <import addon="plugin.video.jellyfin.musicvideos" version="0.14" />
+      <import addon="script.module.requests" version="2.3.0"/>
   </requires>
   <extension point="xbmc.python.pluginsource"
              library="default.py">

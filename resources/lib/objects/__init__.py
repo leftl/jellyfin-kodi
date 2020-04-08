@@ -1,21 +1,7 @@
-from objects import utils
-
-from objects.core import Objects
-from objects.core import ListItem
-from objects.core import Movies
-from objects.core import MusicVideos
-from objects.core import TVShows
-from objects.core import Music
-
-from objects.play import PlayStrm
-from objects.play import PlaySingle
-from objects.play import PlayPlugin
-from objects.play import Playlist
-
+from objects import utils, monitor, player
+from objects.core import Objects, ListItem, Movies, MusicVideos, TVShows, Music
 from objects.listener import listener
-
-from objects import monitor
-from objects import player
+from objects.play import PlayStrm, PlaySingle, PlayPlugin, Playlist
 
 version = "181167264"
 jellyfinversion = "4.1.15"

@@ -8,6 +8,8 @@ import sys
 import xbmc
 import xbmcvfs
 
+from context import Context
+from default import Events
 from jellyfin import Jellyfin
 from helper import loghandler, window
 
@@ -27,6 +29,3 @@ else:
 
 	for server in window('jellyfin.server.states.json') or []:
 		Jellyfin(server).set_state(window('jellyfin.server.%s.state.json' % server))
-
-from context import Context
-from default import Events

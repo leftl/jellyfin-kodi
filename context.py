@@ -20,11 +20,11 @@ __cache__ = xbmc.translatePath('special://temp/jellyfin').decode('utf-8')
 sys.path.insert(0, __cache__)
 sys.path.insert(0, __pcache__)
 sys.path.insert(0, __libraries__)
-sys.path.append(__base__)
+sys.path.insert(0, __base__)
 
 ###############################################################################
 
-from entrypoint.context import Context
+from entrypoint import Context
 
 ###############################################################################
 

@@ -30,7 +30,7 @@ if not xbmcvfs.exists(__pcache__ + '/'):
 
 sys.path.insert(0, __cache__)
 sys.path.insert(0, __pcache__)
-sys.path.append(__base__)
+sys.path.insert(0, __base__)
 sys.argv.append('service')
 
 ###############################################################################
