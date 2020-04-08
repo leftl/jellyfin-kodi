@@ -171,10 +171,8 @@ class Context(object):
             event("LibraryChanged", {'ItemsRemoved': [self.item['Id']], 'ItemsVerify': [self.item['Id']], 'ItemsUpdated': [], 'ItemsAdded': []})
 
     def play(self, transcode=False):
-        # TODO: webservice doesn't seem to work for contextmenu transcode, falls back on direct play
-        # use try, except instead of version check?
         if kodi_version() > 17:
-            path = "http://127.0.0.1:57578/play/file.strm?mode=play&Id=%s" % self.item['Id']
+            path = "http://127.0.0.1:57578/play/file.strm?mode=play&Id=%s" % self.item['Id']  # TODO remove
 
             if self.kodi_id:
                 path += "&KodiId=%s" % self.kodi_id
@@ -189,7 +187,7 @@ class Context(object):
         if transcode:
             path += "&transcode=true"
 
-        if self.server:
+        if self.server != None:
             path += "&server=%s" % self.server_id
 
         xbmc.executebuiltin("PlayMedia(%s)" % path)

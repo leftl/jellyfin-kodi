@@ -499,7 +499,7 @@ def browse(media, view_id=None, folder=None, server_id=None):
                 elif item['Type'] not in ('PhotoAlbum', 'Photo'):
 
                     if kodi_version() > 17:
-                        path = "http://127.0.0.1:57578/play/file.strm?mode=play&Id=%s&server=%s" % (item['Id'], server_id)
+                        path = "http://127.0.0.1:57578/play/file.strm?mode=play&Id=%s&server=%s" % (item['Id'], server_id)  # TODO remove
                     else:
                         params = {
                             'id': item['Id'],

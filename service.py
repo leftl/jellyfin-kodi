@@ -48,7 +48,7 @@ DELAY = int(settings('startupDelay') if settings('SyncInstallRunDone.bool') else
 
 class ServiceManager(threading.Thread):
 
-    ''' Service thread. 
+    ''' Service thread.
         To allow to restart and reload modules internally.
 
         Restart service
@@ -81,7 +81,7 @@ class ServiceManager(threading.Thread):
 
                 if not 'ExitService' in error:
                     service.shutdown()
-                
+
                 if 'RestartService' in error:
 
                     for mod in dict(sys.modules):
@@ -90,12 +90,12 @@ class ServiceManager(threading.Thread):
                         try:
                             module_path = imp.find_module(mod.split('.')[0])[1]
 
-                            if ('plugin.video.jellyfin' in module_path and not 'libraries' in module_path or 
-                                mod.startswith('objects')):
+                            if ('plugin.video.jellyfin' in module_path and not 'libraries' in module_path
+                                or mod.startswith('objects')):
 
                                 LOG.debug("[ reload/%s ]", mod)
                                 del sys.modules[mod]
-                        except ImportError: #xbmc built-in functions or entries with None
+                        except ImportError:  # xbmc built-in functions or entries with None
                             pass
 
                     import entrypoint
@@ -130,7 +130,7 @@ if __name__ == '__main__':
         try:
             session = ServiceManager()
             session.start()
-            session.join() # Block until the thread exits.
+            session.join()  # Block until the thread exits.
 
             if 'RestartService' in session.exception:
                 continue

@@ -100,7 +100,7 @@ class PlayStrm(Play):
         else:
             listitem = xbmcgui.ListItem()
             self.set_listitem(self.info['Item'], listitem, self.info['DbId'])
-            url = "http://127.0.0.1:57578/play/file.strm?mode=play&Id=%s" % self.info['Id']
+            url = "http://127.0.0.1:57578/play/file.strm?mode=play&Id=%s" % self.info['Id']   # TODO remove
 
             if self.info['DbId']:
                 url += "&KodiId=%s" % self.info['DbId']

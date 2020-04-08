@@ -642,7 +642,10 @@ class PlayUtils(object):
         prefs += "&AudioBitrate=384000" if streams[audio_selected].get('Channels', 0) > 2 else "&AudioBitrate=192000"
 
         if subtitle:
-
+            # TODO DEBUG HERE media with DefaultSubtitleStreamIndex > -1 and SupportsExternalStream
+            # == false are not passing SubtitleStreamIndex for sub burn-in handling via server. No subtitles
+            # available on transcode only (h265 with PGSSub)
+            
             index = subtitle
             server_settings = self.info['Server']['api'].get_transcode_settings()
             stream = streams[index]
@@ -650,7 +653,7 @@ class PlayUtils(object):
             if server_settings['EnableSubtitleExtraction'] and stream['SupportsExternalStream']:
                 self.info['SubtitleUrl'] = self.get_subtitles(source, stream, index)
             else:
-                prefs += "&SubtitleStreamIndex=%s" % index
+                prefs += "&SubtitleStreamIndex=%s" % index  #  this does not appear to make a differnce if SupportsExternalStream is false
 
             self.info['SubtitleStreamIndex'] = index
 
