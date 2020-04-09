@@ -4,7 +4,6 @@
 
 import json
 import logging
-import sys
 import urlparse
 import urllib
 import os
@@ -93,7 +92,7 @@ class Events(object):
             window('jellyfin.sync.pause.bool', clear=True)
             window('jellyfin.playlist.plugin', clear=True)
 
-        elif mode =='playstrm':
+        elif mode == 'playstrm':
 
             window('jellyfin.sync.pause.bool', True)
             window('jellyfin.playlist.plugin.bool', True)
@@ -286,7 +285,6 @@ def listing():
             directory("%s (%s)" % (server['Name'], _(30539)), "plugin://plugin.video.jellyfin/?mode=login&server=%s" % server['Id'], False, context=context)
         else:
             directory(server['Name'], "plugin://plugin.video.jellyfin/?mode=browse&server=%s" % server['Id'], context=context)
-
 
     directory(_(33194), "plugin://plugin.video.jellyfin/?mode=managelibs", True)
     directory(_(33134), "plugin://plugin.video.jellyfin/?mode=addserver", False)
