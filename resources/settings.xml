@@ -75,7 +75,7 @@
 	    <setting label="30520" id="skipContextMenu" type="bool" default="false" visible="eq(-1,true)" subsetting="true" />
 
 	    <setting label="33107" type="lsep" />
-		<setting label="30528" id="addUsers" type="action" action="RunPlugin(plugin://plugin.video.jellyfin?mode=adduser&permanent=true)" option="close" />
+		<setting label="30528" id="addUsers" type="action" action="RunPlugin(plugin://plugin.video.jellyfin?mode=adduser&amp;permanent=true)" option="close" />
 		<setting label="33210" id="addUsersHidden" type="bool" default="false" />
 
 		<setting type="sep"/>
