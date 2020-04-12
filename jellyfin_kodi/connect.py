@@ -15,8 +15,8 @@ from database import get_credentials, save_credentials
 from dialogs import ServerConnect, UsersConnect, LoginManual, ServerManual
 from helper import _, settings, addon_id, event, api, dialog, window
 from jellyfin import Jellyfin
-from jellyfin.core.connection_manager import get_server_address, CONNECTION_STATE
-from jellyfin.core.exceptions import HTTPException
+from jellyfin.connection_manager import get_server_address, CONNECTION_STATE
+from jellyfin.exceptions import HTTPException
 
 ################################################################################
 

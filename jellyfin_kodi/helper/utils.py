@@ -17,7 +17,7 @@ import xbmcaddon
 import xbmcgui
 import xbmcvfs
 
-from . import _
+from translate import _
 from dateutil import tz, parser
 
 ###############################################################################
@@ -479,3 +479,10 @@ def convert_to_local(date):
         LOG.info("date: %s", str(date))
 
         return str(date)
+
+def has_attribute(obj, name):
+    try:
+        object.__getattribute__(obj, name)
+        return True
+    except AttributeError:
+        return False
