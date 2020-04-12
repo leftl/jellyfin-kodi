@@ -22,12 +22,6 @@ __pcache__ = xbmc.translatePath(os.path.join(__addon__.getAddonInfo('profile'), 
 __cache__ = xbmc.translatePath('special://temp/jellyfin').decode('utf-8')
 
 sys.path.insert(0, __libraries__)
-
-if not xbmcvfs.exists(__pcache__ + '/'):
-    from resources.lib.helper.utils import copytree
-
-    copytree(os.path.join(__base__, 'objects'), os.path.join(__pcache__, 'objects'))
-
 sys.path.insert(0, __cache__)
 sys.path.insert(0, __pcache__)
 sys.path.insert(0, __base__)
@@ -90,8 +84,7 @@ class ServiceManager(threading.Thread):
                         try:
                             module_path = imp.find_module(mod.split('.')[0])[1]
 
-                            if ('plugin.video.jellyfin' in module_path and not 'libraries' in module_path
-                                or mod.startswith('objects')):
+                            if ('plugin.video.jellyfin' in module_path and not 'libraries' in module_path):
 
                                 LOG.debug("[ reload/%s ]", mod)
                                 del sys.modules[mod]
