@@ -5,11 +5,11 @@
 import logging
 import json
 
-import core.api as api
-from core.configuration import Config
-from core.http import HTTP
-from core.ws_client import WSClient
-from core.connection_manager import ConnectionManager, CONNECTION_STATE
+import api
+from configuration import Config
+from http import HTTP
+from ws_client import WSClient
+from connection_manager import ConnectionManager, CONNECTION_STATE
 
 ###############################################################################
 

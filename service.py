@@ -16,7 +16,7 @@ import xbmcaddon
 
 __addon__ = xbmcaddon.Addon(id='plugin.video.jellyfin')
 __addon_path__ = __addon__.getAddonInfo('path').decode('utf-8')
-__base__ = xbmc.translatePath(os.path.join(__addon_path__, 'resources', 'lib')).decode('utf-8')
+__base__ = xbmc.translatePath(os.path.join(__addon__.getAddonInfo('path'), 'jellyfin_kodi')).decode('utf-8')
 __libraries__ = xbmc.translatePath(os.path.join(__addon_path__, 'libraries')).decode('utf-8')
 __pcache__ = xbmc.translatePath(os.path.join(__addon__.getAddonInfo('profile'), 'jellyfin')).decode('utf-8')
 __cache__ = xbmc.translatePath('special://temp/jellyfin').decode('utf-8')
@@ -29,7 +29,7 @@ sys.argv.append('service')
 
 ###############################################################################
 
-from helper import settings
+from helper.utils import settings
 import entrypoint
 
 ###############################################################################
@@ -105,7 +105,7 @@ class ServiceManager(threading.Thread):
                     imp.reload(helper)
                     imp.reload(objects)
 
-                    from helper import settings
+                    from helper.utils import settings
 
 
 if __name__ == '__main__':

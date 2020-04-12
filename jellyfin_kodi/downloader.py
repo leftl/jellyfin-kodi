@@ -15,9 +15,8 @@ import xbmcaddon
 
 import requests
 from helper import settings, stop, event, window, create_id
-from jellyfin import Jellyfin
-from jellyfin.core import api
-from jellyfin.core.exceptions import HTTPException
+from jellyfin import Jellyfin, api
+from jellyfin.exceptions import HTTPException
 
 ###############################################################################
 
