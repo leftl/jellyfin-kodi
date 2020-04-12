@@ -40,7 +40,7 @@ class ServerManual(xbmcgui.WindowXMLDialog):
         xbmcgui.WindowXMLDialog.__init__(self, *args, **kwargs)
 
     def set_args(self, **kwargs):
-        # connect_manager, user_image, servers, jellyfin_connect
+        # connect_manager, user_image, servers
         for key, value in kwargs.iteritems():
             setattr(self, key, value)
 

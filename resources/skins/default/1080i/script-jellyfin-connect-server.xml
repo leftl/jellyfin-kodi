@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <window>
-	<defaultcontrol always="true">206</defaultcontrol>
+	<defaultcontrol always="true">205</defaultcontrol>
 	<animation type="WindowOpen" reversible="false">
 		<effect type="zoom" start="80" end="100" center="960,540" delay="160" tween="circle" easin="out" time="240" />
 		<effect type="fade" delay="160" end="100" time="240" />
@@ -160,7 +160,7 @@
 							<description>spacer</description>
 							<height>20</height>
 						</control>
-						<control type="button" id="206">
+						<control type="button" id="205">
 							<label>[B]$ADDON[plugin.video.jellyfin 30611][/B]</label> <!-- Manually Add Server -->
 							<width>476</width>
 							<height>65</height>
