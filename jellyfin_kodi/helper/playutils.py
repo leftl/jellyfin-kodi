@@ -584,7 +584,7 @@ class PlayUtils(object):
             IsTextSubtitleStream if true, is available to download from server.
         '''
         prefs = ""
-        audio_selected = None
+        audio_selected, subtitle_selected = None, None
         audio_streams = collections.OrderedDict()
         subs_streams = collections.OrderedDict()
         streams = source['MediaStreams']
@@ -622,7 +622,6 @@ class PlayUtils(object):
                 subs_streams[track] = index
 
         if audio is not None:
-
             audio_selected = audio
 
         elif skip_dialog in (0, 1):
@@ -633,59 +632,37 @@ class PlayUtils(object):
                 audio_selected = audio_streams[selection[resp]] if resp else source['DefaultAudioStreamIndex']
             else:  # Only one choice
                 audio_selected = audio_streams[next(iter(audio_streams))]
+
         else:
             audio_selected = source['DefaultAudioStreamIndex']
 
-        # TODO handle media with no audio streams
-        self.info['AudioStreamIndex'] = audio_selected
-        prefs += "&AudioStreamIndex=%s" % audio_selected
-        prefs += "&AudioBitrate=384000" if streams[audio_selected].get('Channels', 0) > 2 else "&AudioBitrate=192000"
+        if audio_selected is not None:
+            self.info['AudioStreamIndex'] = audio_selected
+            prefs += "&AudioStreamIndex=%s" % audio_selected
+            prefs += "&AudioBitrate=384000" if streams[audio_selected].get('Channels', 0) > 2 else "&AudioBitrate=192000"
 
-        if subtitle is not None:  # TODO cleanup redundant code
-
-            index = subtitle
-            server_settings = self.info['Server']['api'].get_transcode_settings()
-            stream = streams[index]
-
-            if server_settings['EnableSubtitleExtraction'] and stream['SupportsExternalStream']:
-                self.info['SubtitleUrl'] = self.get_subtitles(source, stream, index)
-            else:
-                prefs += "&SubtitleStreamIndex=%s" % index
-
-            self.info['SubtitleStreamIndex'] = index
+        if subtitle is not None:
+            subtitle_selected = subtitle
 
         elif skip_dialog in (0, 2) and len(subs_streams) > 0:
-
             selection = list(['No subtitles']) + list(subs_streams.keys())
             resp = dialog("select", _(33014), selection)
 
             if resp:
-                index = subs_streams[selection[resp]] if resp > -1 else source['DefaultSubtitleStreamIndex']
-
-                if index is not None:
-
-                    server_settings = self.info['Server']['api'].get_transcode_settings()
-                    stream = streams[index]
-
-                    if server_settings['EnableSubtitleExtraction'] and stream['SupportsExternalStream']:
-                        self.info['SubtitleUrl'] = self.get_subtitles(source, stream, index)
-                    else:
-                        prefs += "&SubtitleStreamIndex=%s" % index
-
-            self.info['SubtitleStreamIndex'] = index
+                subtitle_selected = subs_streams[selection[resp]] if resp > -1 else source['DefaultSubtitleStreamIndex']
 
         elif source['DefaultSubtitleStreamIndex'] is not None:  # fallback on default subtitle stream if present
+            subtitle_selected = source['DefaultSubtitleStreamIndex']
 
-            index = source['DefaultSubtitleStreamIndex']
+        if subtitle_selected is not None:
             server_settings = self.info['Server']['api'].get_transcode_settings()
-            stream = streams[index]
+            stream = streams[subtitle_selected]
 
             if server_settings['EnableSubtitleExtraction'] and stream['SupportsExternalStream']:
-                self.info['SubtitleUrl'] = self.get_subtitles(source, stream, index)
+                self.info['SubtitleUrl'] = self.get_subtitles(source, stream, subtitle_selected)
             else:
-                prefs += "&SubtitleStreamIndex=%s" % index
-
-            self.info['SubtitleStreamIndex'] = index
+                prefs += "&SubtitleStreamIndex=%s" % subtitle_selected
+            self.info['SubtitleStreamIndex'] = subtitle_selected
 
         return prefs
 
