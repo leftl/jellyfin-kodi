@@ -636,7 +636,7 @@ class PlayUtils(object):
         else:
             audio_selected = source['DefaultAudioStreamIndex']
 
-        # TODO handle media with no audio streams 
+        # TODO handle media with no audio streams
         self.info['AudioStreamIndex'] = audio_selected
         prefs += "&AudioStreamIndex=%s" % audio_selected
         prefs += "&AudioBitrate=384000" if streams[audio_selected].get('Channels', 0) > 2 else "&AudioBitrate=192000"
@@ -674,9 +674,9 @@ class PlayUtils(object):
 
             self.info['SubtitleStreamIndex'] = index
 
-        elif source['DefaultsubtitleStreamIndex'] is not None:  # fallback on default subtitle stream if present
+        elif source['DefaultSubtitleStreamIndex'] is not None:  # fallback on default subtitle stream if present
 
-            index = source['DefaultsubtitleStreamIndex']
+            index = source['DefaultSubtitleStreamIndex']
             server_settings = self.info['Server']['api'].get_transcode_settings()
             stream = streams[index]
 
