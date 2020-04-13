@@ -16,7 +16,7 @@ import client
 import collections
 import objects
 import requests
-from . import _, settings, window, dialog, values, kodi_version
+from . import _, settings, window, dialog, values
 from jellyfin import Jellyfin
 from objects.kodi import kodi, queries as QU
 
@@ -54,8 +54,8 @@ def set_properties(item, method, server_id=None):
     })
     window('jellyfin.play.json', current)
 
-class PlayUtils(object):
 
+class PlayUtils(object):
 
     def __init__(self, item, force_transcode=False, server=None):
 
@@ -156,8 +156,6 @@ class PlayUtils(object):
 
     def is_file_exists(self, source):
 
-        path = self.direct_play(source)
-
         if self.info['ServerId'] is None and xbmcvfs.exists(self.info['Path']):
             LOG.info("Path exists.")
 
@@ -199,8 +197,7 @@ class PlayUtils(object):
             source['SupportsDirectStream'] = False
             source['Protocol'] = "File"
 
-
-        if (self.is_strm(source) or source['SupportsDirectPlay'] and 
+        if (self.is_strm(source) or source['SupportsDirectPlay'] and
            (source['Protocol'] == 'Http' and not settings('playUrlFromServer.bool') or not self.info['ForceHttp'] and self.is_file_exists(source))):
 
             LOG.info("--[ direct play ]")
@@ -238,7 +235,7 @@ class PlayUtils(object):
 
     def transcode(self, source, audio=None, subtitle=None):
 
-        if not 'TranscodingUrl' in source:
+        if 'TranscodingUrl' not in source:
             raise Exception("use get_sources to get transcoding url")
 
         self.info['Method'] = "Transcode"
@@ -246,11 +243,13 @@ class PlayUtils(object):
         if self.info['Item']['MediaType'] == 'Video':
             base, params = source['TranscodingUrl'].split('?')
 
-            if settings('skipDialogTranscode') != "3" and source.get('MediaStreams'):
+            if source.get('MediaStreams'):
                 url_parsed = params.split('&')
 
                 for i in url_parsed:
-                    if 'AudioStreamIndex' in i or 'AudioBitrate' in i or 'SubtitleStreamIndex' in i: # handle manually
+                    if ('AudioStreamIndex' in i or
+                        'AudioBitrate' in i or
+                        'SubtitleStreamIndex' in i):  # handle manually # noqa E129
                         url_parsed.remove(i)
 
                 params = "%s%s" % ('&'.join(url_parsed), self.get_audio_subs(source, audio, subtitle))
@@ -544,9 +543,9 @@ class PlayUtils(object):
 
             if self.info['Method'] == 'DirectStream':
                 listitem.setSubtitles(subs)
-            
+
             self.info['Item']['PlaybackInfo']['Subtitles'] = mapping
-        
+
         elif self.info['Method'] == 'DirectStream':
             self.info['Item']['PlaybackInfo']['Subtitles'] = {}
 
@@ -585,9 +584,11 @@ class PlayUtils(object):
             IsTextSubtitleStream if true, is available to download from server.
         '''
         prefs = ""
+        audio_selected = None
         audio_streams = collections.OrderedDict()
         subs_streams = collections.OrderedDict()
         streams = source['MediaStreams']
+        skip_dialog = int(settings('skipDialogTranscode')) or 0
 
         for stream in streams:
 
@@ -620,10 +621,8 @@ class PlayUtils(object):
 
                 subs_streams[track] = index
 
-        skip_dialog = int(settings('skipDialogTranscode') or 0)
-        audio_selected = None
+        if audio is not None:
 
-        if audio:
             audio_selected = audio
 
         elif skip_dialog in (0, 1):
@@ -632,20 +631,18 @@ class PlayUtils(object):
                 selection = list(audio_streams.keys())
                 resp = dialog("select", _(33013), selection)
                 audio_selected = audio_streams[selection[resp]] if resp else source['DefaultAudioStreamIndex']
-            else: # Only one choice
+            else:  # Only one choice
                 audio_selected = audio_streams[next(iter(audio_streams))]
         else:
             audio_selected = source['DefaultAudioStreamIndex']
 
+        # TODO handle media with no audio streams 
         self.info['AudioStreamIndex'] = audio_selected
         prefs += "&AudioStreamIndex=%s" % audio_selected
         prefs += "&AudioBitrate=384000" if streams[audio_selected].get('Channels', 0) > 2 else "&AudioBitrate=192000"
 
-        if subtitle:
-            # TODO DEBUG HERE media with DefaultSubtitleStreamIndex > -1 and SupportsExternalStream
-            # == false are not passing SubtitleStreamIndex for sub burn-in handling via server. No subtitles
-            # available on transcode only (h265 with PGSSub)
-            
+        if subtitle is not None:  # TODO cleanup redundant code
+
             index = subtitle
             server_settings = self.info['Server']['api'].get_transcode_settings()
             stream = streams[index]
@@ -653,17 +650,17 @@ class PlayUtils(object):
             if server_settings['EnableSubtitleExtraction'] and stream['SupportsExternalStream']:
                 self.info['SubtitleUrl'] = self.get_subtitles(source, stream, index)
             else:
-                prefs += "&SubtitleStreamIndex=%s" % index  #  this does not appear to make a differnce if SupportsExternalStream is false
+                prefs += "&SubtitleStreamIndex=%s" % index
 
             self.info['SubtitleStreamIndex'] = index
 
-        elif skip_dialog in (0, 2) and len(subs_streams):
+        elif skip_dialog in (0, 2) and len(subs_streams) > 0:
 
             selection = list(['No subtitles']) + list(subs_streams.keys())
             resp = dialog("select", _(33014), selection)
 
             if resp:
-                index = subs_streams[selection[resp]] if resp > -1 else source.get('DefaultSubtitleStreamIndex')
+                index = subs_streams[selection[resp]] if resp > -1 else source['DefaultSubtitleStreamIndex']
 
                 if index is not None:
 
@@ -675,7 +672,20 @@ class PlayUtils(object):
                     else:
                         prefs += "&SubtitleStreamIndex=%s" % index
 
-                self.info['SubtitleStreamIndex'] = index
+            self.info['SubtitleStreamIndex'] = index
+
+        elif source['DefaultsubtitleStreamIndex'] is not None:  # fallback on default subtitle stream if present
+
+            index = source['DefaultsubtitleStreamIndex']
+            server_settings = self.info['Server']['api'].get_transcode_settings()
+            stream = streams[index]
+
+            if server_settings['EnableSubtitleExtraction'] and stream['SupportsExternalStream']:
+                self.info['SubtitleUrl'] = self.get_subtitles(source, stream, index)
+            else:
+                prefs += "&SubtitleStreamIndex=%s" % index
+
+            self.info['SubtitleStreamIndex'] = index
 
         return prefs
 
@@ -685,7 +695,7 @@ class PlayUtils(object):
             url = "%s%s" % (self.info['ServerAddress'], stream['DeliveryUrl'])
         else:
             url = ("%s/Videos/%s/%s/Subtitles/%s/Stream.%s?api_key=%s" %
-                  (self.info['ServerAddress'], self.info['Item']['Id'], source['Id'], index, stream['Codec'], self.info['Token']))
+                   (self.info['ServerAddress'], self.info['Item']['Id'], source['Id'], index, stream['Codec'], self.info['Token']))
 
         if self.info['ServerAddress'].startswith('https') and not settings('sslverify.bool'):
             url += "|verifypeer=false"
