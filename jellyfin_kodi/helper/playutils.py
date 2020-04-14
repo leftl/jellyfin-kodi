@@ -629,7 +629,7 @@ class PlayUtils(object):
 
                 selection = list(audio_streams.keys())
                 resp = dialog("select", _(33013), selection)
-                audio_selected = audio_streams[selection[resp]] if resp else source['DefaultAudioStreamIndex']
+                audio_selected = audio_streams[selection[resp]] if resp else source.get('DefaultAudioStreamIndex')
             else:  # Only one choice
                 audio_selected = audio_streams[next(iter(audio_streams))]
 
@@ -649,7 +649,7 @@ class PlayUtils(object):
             resp = dialog("select", _(33014), selection)
 
             if resp:
-                subtitle_selected = subs_streams[selection[resp]] if resp > -1 else source['DefaultSubtitleStreamIndex']
+                subtitle_selected = subs_streams[selection[resp]] if resp > -1 else source.get('DefaultSubtitleStreamIndex')
 
         elif source.get('DefaultSubtitleStreamIndex') is not None:  # fallback on default subtitle stream if present
             subtitle_selected = source.get('DefaultSubtitleStreamIndex')
@@ -661,8 +661,8 @@ class PlayUtils(object):
             if server_settings['EnableSubtitleExtraction'] and stream['SupportsExternalStream']:
                 self.info['SubtitleUrl'] = self.get_subtitles(source, stream, subtitle_selected)
             else:
-                prefs += "&SubtitleStreamIndex=%s" % subtitle_selected
-            
+                prefs += "&SubtitleStreamIndex=%s" % subtitle_selected  # NOTE this param forces burn-in
+
             self.info['SubtitleStreamIndex'] = subtitle_selected
 
         return prefs
