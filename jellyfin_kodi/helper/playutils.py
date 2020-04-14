@@ -651,8 +651,8 @@ class PlayUtils(object):
             if resp:
                 subtitle_selected = subs_streams[selection[resp]] if resp > -1 else source['DefaultSubtitleStreamIndex']
 
-        elif source['DefaultSubtitleStreamIndex'] is not None:  # fallback on default subtitle stream if present
-            subtitle_selected = source['DefaultSubtitleStreamIndex']
+        elif source.get('DefaultSubtitleStreamIndex') is not None:  # fallback on default subtitle stream if present
+            subtitle_selected = source.get('DefaultSubtitleStreamIndex')
 
         if subtitle_selected is not None:
             server_settings = self.info['Server']['api'].get_transcode_settings()
@@ -662,6 +662,7 @@ class PlayUtils(object):
                 self.info['SubtitleUrl'] = self.get_subtitles(source, stream, subtitle_selected)
             else:
                 prefs += "&SubtitleStreamIndex=%s" % subtitle_selected
+            
             self.info['SubtitleStreamIndex'] = subtitle_selected
 
         return prefs
